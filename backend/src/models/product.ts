@@ -13,30 +13,35 @@ interface IProduct {
   price: number | null;
 }
 
-const ImageSchema = new mongoose.Schema<IImage>({
-  fileName: {
-    type: String,
-    required: true,
+const ImageSchema = new mongoose.Schema<IImage>(
+  {
+    fileName: {
+      type: String,
+      required: [true, 'Поле "fileName" должно быть заполнено'],
+    },
+    originalName: {
+      type: String,
+      required: [true, 'Поле "originalName" должно быть заполнено'],
+    },
   },
-  originalName: {
-    type: String,
-    required: true,
-  },
-});
+  { _id: false },
+);
 
-const ProductSchema =
-  new mongoose.Schema<IProduct>({
+const ProductSchema = new mongoose.Schema<IProduct>(
+  {
+    image: ImageSchema,
+
     title: {
       type: String,
-      required: true,
-      minlength: 2,
-      maxlength: 30,
+      unique: true,
+      required: [true, 'Поле "title" должно быть заполнено'],
+      minlength: [2, 'Минимальная длина поля "title" - 2'],
+      maxlength: [30, 'Максимальная длина поля "title" - 30'],
     },
-    image: ImageSchema,
 
     category: {
       type: String,
-      required: true,
+      required: [true, 'Поле "category" должно быть заполнено'],
     },
     description: {
       type: String,
@@ -47,9 +52,8 @@ const ProductSchema =
       default: null,
       required: false,
     },
-  });
-
-export default mongoose.model<IProduct>(
-  'product',
-  ProductSchema,
+  },
+  { versionKey: false },
 );
+
+export default mongoose.model<IProduct>('product', ProductSchema);
